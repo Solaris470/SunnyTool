@@ -127,10 +127,16 @@
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <span class="material-icons">menu_open</span>
+            </button>
+        </div>
         <ul class="sidebar-nav">
-            <li><a href="../index.html"><span class="material-icons">home</span> หน้าหลัก</a></li>
-            <li><a href="thai_text_fixer.html"><span class="material-icons">translate</span> แก้ไขข้อความไทย</a></li>
-            <li><a href="clean_googlesheet_data.html" class="active"><span class="material-icons">table_chart</span> ลบข้อมูลซ้ำ</a></li>
+            <li><a href="../index.html"><span class="material-icons">home</span> <span>หน้าหลัก</span></a></li>
+            <li><a href="thai_text_fixer.html"><span class="material-icons">translate</span> <span>แก้ไขข้อความไทย</span></a></li>
+            <li><a href="clean_googlesheet_data.html" class="active"><span class="material-icons">table_chart</span> <span>ลบข้อมูลซ้ำ</span></a></li>
+            <li><a href="log_reader.html"><span class="material-icons">description</span> <span>อ่าน Log File</span></a></li>
         </ul>
     </nav>
 
@@ -165,6 +171,7 @@
         </div>
     </div>
 
+    <script src="../assets/shared.js"></script>
     <script>
         function removeDuplicates() {
             const input = document.getElementById('input-text').value;
@@ -313,71 +320,7 @@
             }
         }
 
-        // ใส่ข้อมูลตัวอย่างเมื่อโหลดหน้า
-        /* 
-        window.onload = function() {
-            const sampleData = `
-                สรุปผลความคาดหวังผู้บริหารระดับสูง
-                M_MANAGER_QUESTION
-                การให้ความเห็นของผู้บริหารในแบบสอบถามความคาดหวังของผู้บริหารระดับสูง
-                M_OPINION_EXPECT
-                หัวข้อรวบรวมข้อมูลบริบทองค์กร
-                M_TOPIC_AGGREGATE_DATA
-                หน่วยงานรวบรวมบริบทองค์กร
-                FRM_TOPIC_DEP_AUDIT_PLAN
-                หน่วยรับตรวจ
-                FRM_UNIT_AUDIT
-                แบบประเมินความเสี่ยง เพื่อวางแผนการตรวจสอบ
-                M_WH_RISK_ASSESS_PLAN
-                แผนการตรวจสอบเชิงกลยุทธ์
-                M_WH_STRATEGIC_PLAN
-                หัวข้อรวบรวมข้อมูลบริบทองค์กร
-                M_TOPIC_AGGREGATE_DATA
-                หน่วยงานรวบรวมบริบทองค์กร
-                FRM_TOPIC_DEP_AUDIT_PLAN`;
-            
-            document.getElementById('input-text').value = sampleData;
-        }; 
-        */
-
-        // Sidebar functionality
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            const mainContent = document.getElementById('mainContent');
-            
-            if (window.innerWidth <= 768) {
-                // Mobile behavior
-                sidebar.classList.toggle('show');
-                overlay.classList.toggle('show');
-            } else {
-                // Desktop behavior
-                sidebar.classList.toggle('hidden');
-                mainContent.classList.toggle('expanded');
-            }
-        }
-
-        // Close sidebar when clicking on overlay
-        document.getElementById('sidebarOverlay').addEventListener('click', function() {
-            toggleSidebar();
-        });
-
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            const mainContent = document.getElementById('mainContent');
-            
-            if (window.innerWidth > 768) {
-                // Desktop: hide mobile elements
-                overlay.classList.remove('show');
-                sidebar.classList.remove('show');
-            } else {
-                // Mobile: reset desktop classes
-                sidebar.classList.remove('hidden');
-                mainContent.classList.remove('expanded');
-            }
-        });
+        // Sidebar functionality is in shared.js
     </script>
     </div>
     </main>

@@ -181,10 +181,16 @@
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <span class="material-icons">menu_open</span>
+            </button>
+        </div>
         <ul class="sidebar-nav">
-            <li><a href="../index.html"><span class="material-icons">home</span> หน้าหลัก</a></li>
-            <li><a href="thai_text_fixer.html" class="active"><span class="material-icons">translate</span> แก้ไขข้อความไทย</a></li>
-            <li><a href="clean_googlesheet_data.html"><span class="material-icons">table_chart</span> ลบข้อมูลซ้ำ</a></li>
+            <li><a href="../index.html"><span class="material-icons">home</span> <span>หน้าหลัก</span></a></li>
+            <li><a href="thai_text_fixer.html" class="active"><span class="material-icons">translate</span> <span>แก้ไขข้อความไทย</span></a></li>
+            <li><a href="clean_googlesheet_data.html"><span class="material-icons">table_chart</span> <span>ลบข้อมูลซ้ำ</span></a></li>
+            <li><a href="log_reader.html"><span class="material-icons">description</span> <span>อ่าน Log File</span></a></li>
         </ul>
     </nav>
 
@@ -223,6 +229,7 @@
         </div>
     </div>
 
+    <script src="../assets/shared.js"></script>
     <script>
         // ฐานข้อมูลการแก้ไขที่พบบ่อย
         const commonFixes = {
@@ -559,44 +566,7 @@
             }
         });
 
-        // Sidebar functionality
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            const mainContent = document.getElementById('mainContent');
-            
-            if (window.innerWidth <= 768) {
-                // Mobile behavior
-                sidebar.classList.toggle('show');
-                overlay.classList.toggle('show');
-            } else {
-                // Desktop behavior
-                sidebar.classList.toggle('hidden');
-                mainContent.classList.toggle('expanded');
-            }
-        }
-
-        // Close sidebar when clicking on overlay
-        document.getElementById('sidebarOverlay').addEventListener('click', function() {
-            toggleSidebar();
-        });
-
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            const mainContent = document.getElementById('mainContent');
-            
-            if (window.innerWidth > 768) {
-                // Desktop: hide mobile elements
-                overlay.classList.remove('show');
-                sidebar.classList.remove('show');
-            } else {
-                // Mobile: reset desktop classes
-                sidebar.classList.remove('hidden');
-                mainContent.classList.remove('expanded');
-            }
-        });
+        // Sidebar functionality is in shared.js
     </script>
     </div>
     </main>
