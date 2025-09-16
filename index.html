@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SunnyTool - เครื่องมือออนไลน์</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="assets/shared.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #fafafa;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            color: #212121;
+            font-size: 2.125rem;
+            font-weight: 400;
+            text-align: center;
+            margin-bottom: 32px;
+            margin-top: 16px;
+        }
+
+        /* Tool Cards Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card:hover {
+            box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+            transform: translateY(-2px);
+        }
+
+        .tool-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #2196f3;
+        }
+
+        .tool-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #212121;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .tool-description {
+            color: #757575;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .tool-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tag {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid rgba(33, 150, 243, 0.2);
+        }
+
+        .tool-button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tool-button:hover {
+            background: #1976d2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .tool-button .material-icons {
+            font-size: 18px;
+        }
+
+
+        /* Page Specific Responsive Design */
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .tool-card {
+                padding: 16px;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+                margin-bottom: 24px;
+            }
+        }
+
+        /* Material Design Animations */
+        .tool-card {
+            animation: materialFadeIn 0.3s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        .tool-card:nth-child(1) { animation-delay: 0.05s; }
+        .tool-card:nth-child(2) { animation-delay: 0.1s; }
+        .tool-card:nth-child(3) { animation-delay: 0.15s; }
+        .tool-card:nth-child(4) { animation-delay: 0.2s; }
+
+        @keyframes materialFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Material Design Ripple Effect */
+        .tool-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(33, 150, 243, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .tool-card:active::after {
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="material-icons">wb_sunny</span>
+            SunnyTool
+        </div>
+        <div class="header-nav">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <span class="material-icons">menu</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <ul class="sidebar-nav">
+            <li><a href="#home" class="active"><span class="material-icons">home</span> หน้าหลัก</a></li>
+            <li><a href="tools/thai_text_fixer.html"><span class="material-icons">translate</span> แก้ไขข้อความไทย</a></li>
+            <li><a href="tools/clean_googlesheet_data.html"><span class="material-icons">table_chart</span> ลบข้อมูลซ้ำ</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <h1 class="page-title">🌟 เครื่องมือออนไลน์ SunnyTool</h1>
+
+        <!-- Tools Grid -->
+        <section class="tools-grid">
+            <!-- Thai Text Fixer Tool -->
+            <div class="tool-card" onclick="window.open('tools/thai_text_fixer.html', '_blank')">
+                <div class="tool-icon">
+                    <span class="material-icons">translate</span>
+                </div>
+                <h3 class="tool-title">เครื่องมือแก้ไขข้อความไทยจาก PDF</h3>
+                <p class="tool-description">
+                    แก้ไขปัญหาข้อความไทยที่คัดลอกมาจาก PDF ที่มีสระและวรรณยุกต์แยกออกจากตัวอักษร
+                </p>
+                <div class="tool-tags">
+                    <span class="tag">PDF</span>
+                    <span class="tag">ภาษาไทย</span>
+                    <span class="tag">แก้ไขข้อความ</span>
+                </div>
+                <a href="tools/thai_text_fixer.html" class="tool-button" onclick="event.stopPropagation()">
+                    <span class="material-icons">launch</span>
+                    เปิดเครื่องมือ
+                </a>
+            </div>
+
+            <!-- Google Sheets Data Cleaner Tool -->
+            <div class="tool-card" onclick="window.open('tools/clean_googlesheet_data.html', '_blank')">
+                <div class="tool-icon">
+                    <span class="material-icons">table_chart</span>
+                </div>
+                <h3 class="tool-title">เครื่องมือลบข้อมูลซ้ำจาก Google Sheets</h3>
+                <p class="tool-description">
+                    ลบข้อมูลที่ซ้ำกันในรายการ เพื่อความสะอาดและเป็นระเบียบของข้อมูลใน Google Sheets
+                </p>
+                <div class="tool-tags">
+                    <span class="tag">Google Sheets</span>
+                    <span class="tag">ลบข้อมูลซ้ำ</span>
+                    <span class="tag">จัดระเบียบ</span>
+                </div>
+                <a href="tools/clean_googlesheet_data.html" class="tool-button" onclick="event.stopPropagation()">
+                    <span class="material-icons">launch</span>
+                    เปิดเครื่องมือ
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                // Mobile behavior
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+            } else {
+                // Desktop behavior
+                sidebar.classList.toggle('hidden');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        // Close sidebar when clicking on overlay
+        document.getElementById('sidebarOverlay').addEventListener('click', function() {
+            toggleSidebar();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 768) {
+                // Desktop: hide mobile elements
+                overlay.classList.remove('show');
+                sidebar.classList.remove('show');
+            } else {
+                // Mobile: reset desktop classes
+                sidebar.classList.remove('hidden');
+                mainContent.classList.remove('expanded');
+            }
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add active class to current page in sidebar
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        document.querySelectorAll('.sidebar-nav a').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(currentPage) || 
+                (currentPage === 'index.html' && link.getAttribute('href') === '#home')) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

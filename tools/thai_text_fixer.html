@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องมือแก้ไขข้อความไทยจาก PDF</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="../assets/shared.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fafafa;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-section, .output-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            color: #34495e;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 15px;
+            font-size: 16px;
+            font-family: 'Sarabun', Arial, sans-serif;
+            line-height: 1.6;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin: 8px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background: #1976d2;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .stats {
+            background: #e3f2fd;
+            color: #2196f3;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            text-align: center;
+            font-weight: 500;
+            border: 1px solid #bbdefb;
+        }
+        
+        .fixes-list {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .fix-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+            font-family: 'Sarabun', Arial, sans-serif;
+        }
+        
+        .fix-item:last-child {
+            border-bottom: none;
+        }
+        
+        .before {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .after {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .copy-button {
+            background: #4caf50;
+            padding: 8px 16px;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .copy-button:hover {
+            background: #43a047;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            textarea {
+                height: 150px;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 12px 30px;
+                font-size: 16px;
+                margin: 5px;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="material-icons">wb_sunny</span>
+            SunnyTool
+        </div>
+        <div class="header-nav">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <span class="material-icons">menu</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <ul class="sidebar-nav">
+            <li><a href="../index.html"><span class="material-icons">home</span> หน้าหลัก</a></li>
+            <li><a href="thai_text_fixer.html" class="active"><span class="material-icons">translate</span> แก้ไขข้อความไทย</a></li>
+            <li><a href="clean_googlesheet_data.html"><span class="material-icons">table_chart</span> ลบข้อมูลซ้ำ</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="container">
+        <h1>🔧 เครื่องมือแก้ไขข้อความไทยจาก PDF</h1>
+        
+        <div class="input-section">
+            <h2 class="section-title">📝 ข้อความที่ต้องการแก้ไข</h2>
+            <textarea id="inputText" placeholder="วางข้อความที่คัดลอกมาจาก PDF ที่มีปัญหาสระและวรรณยุกต์ไม่ติดมาด้วยที่นี่...&#10;&#10;ตอัวยาง: สวยมาก, เดือนมิถุนายน, การบรหาร"></textarea>
+        </div>
+        
+        <div class="button-container">
+            <button onclick="fixText()">🔧 แก้ไขข้อความ</button>
+            <button onclick="clearAll()">🗑️ ล้างทั้งหมด</button>
+        </div>
+        
+        <div id="stats" class="stats" style="display: none;">
+            <div id="statsContent"></div>
+        </div>
+        
+        <div id="fixesList" class="fixes-list" style="display: none;">
+            <h3 style="margin-bottom: 15px; color: #2c3e50;">📋 รายการการแก้ไข</h3>
+            <div id="fixesContent"></div>
+        </div>
+        
+        <div class="output-section">
+            <h2 class="section-title">✅ ข้อความที่แก้ไขแล้ว</h2>
+            <textarea id="outputText" placeholder="ข้อความที่แก้ไขแล้วจะปรากฏที่นี่..." readonly></textarea>
+            <button class="copy-button" onclick="copyToClipboard()" style="display: none;" id="copyButton">📋 คัดลอกข้อความ</button>
+            <div class="success-message" id="successMessage">คัดลอกข้อความเรียบร้อยแล้ว! ✅</div>
+        </div>
+    </div>
+
+    <script>
+        // ฐานข้อมูลการแก้ไขที่พบบ่อย
+        const commonFixes = {
+            // สระ ำ หายไป (า -> ำ)
+            'ด าเนิน': 'ดำเนิน',
+            'จัดท ารายงาน': 'จัดทำรายงาน',
+            'ท ารายงาน': 'ทำรายงาน',
+            'ก าหนด': 'กำหนด',
+            'ค าถาม': 'คำถาม',
+            'ค าตอบ': 'คำตอบ',
+            'ค าอธิบาย': 'คำอธิบาย',
+            'ค าแนะนำ': 'คำแนะนำ',
+            'ค าสั่ง': 'คำสั่ง',
+            'ค าขอ': 'คำขอ',
+            'ค าชี้แจง': 'คำชี้แจง',
+            'ค าปรารภ': 'คำปรารภ',
+            'ค าพิพากษา': 'คำพิพากษา',
+            'ค าแถลง': 'คำแถลง',
+            'ค านำ': 'คำนำ',
+            'ค าประกาศ': 'คำประกาศ',
+            'ค าเตือน': 'คำเตือน',
+            'ค ายืนยัน': 'คำยืนยัน',
+            'ก าลัง': 'กำลัง',
+            'ก าไร': 'กำไร',
+            'ก าเนิด': 'กำเนิด',
+            'ก าจัด': 'กำจัด',
+            'น้ าใจ': 'น้ำใจ',
+            'น้ าตา': 'น้ำตา',
+            'น้ าค้าง': 'น้ำค้าง',
+            'น้ าฝน': 'น้ำฝน',
+            'น้ าแข็ง': 'น้ำแข็ง',
+            'น้ าผึ้ง': 'น้ำผึ้ง',
+            'น้ าตาล': 'น้ำตาล',
+            'น้ าส้ม': 'น้ำส้ม',
+            'น้ ามัน': 'น้ำมัน',
+            'น้ าดื่ม': 'น้ำดื่ม',
+            'กับข าว': 'กับข้าว',
+            'ข้าวส าร': 'ข้าวสาร',
+            'ขาวโพด': 'ข้าวโพด',
+            'ขาวต้ม': 'ข้าวต้ม',
+            'ขาวผัด': 'ข้าวผัด',
+            'สาคัญ': 'สำคัญ',
+            'สาเร็จ': 'สำเร็จ',
+            'สาเหตุ': 'สำเหตุ',
+            'สานวน': 'สำนวน',
+            'สานัก': 'สำนัก',
+            'สารวจ': 'สำรวจ',
+            'สารอง': 'สำรอง',
+            'สาคร': 'สำคร',
+            'สาราญ': 'สำราญ',
+            'สาแดง': 'สำแดง',
+            'ทางาน': 'ทำงาน',
+            'ทาเล': 'ทำเล',
+            'ทาการ': 'ทำการ',
+            'ทาได้': 'ทำได้',
+            'ทาแล้ว': 'ทำแล้ว',
+            
+            // สระ ำ แยกออก
+            'สวย มาก': 'สวยมาก',
+            'ขอ บคุณ': 'ขอบคุณ',
+            'ก บ': 'กับ',
+            'น ้า': 'น้ำ',
+            'ค ำ': 'คำ',
+            'ใน ค ำ': 'ในคำ',
+            'ทำ งาน': 'ทำงาน',
+            'ใส ใจ': 'ใส่ใจ',
+            'ครบ ถวน': 'ครบถ้วน',
+            'สำ คัญ': 'สำคัญ',
+            'แล ้ว': 'แล้ว',
+            'ไป แล ้ว': 'ไปแล้ว',
+            'มา แล ้ว': 'มาแล้ว',
+            
+            // เดือน
+            'มกรา คม': 'มกราคม',
+            'กุม ภาพันธ์': 'กุมภาพันธ์',
+            'มีนา คม': 'มีนาคม',
+            'เมษา ยน': 'เมษายน',
+            'พฤษ ภาคม': 'พฤษภาคม',
+            'มิถุ นายน': 'มิถุนายน',
+            'กรกฎา คม': 'กรกฎาคม',
+            'สิง หาคม': 'สิงหาคม',
+            'กัน ยายน': 'กันยายน',
+            'ตุลา คม': 'ตุลาคม',
+            'พฤศ จิกายน': 'พฤศจิกายน',
+            'ธัน วาคม': 'ธันวาคม',
+            
+            // คำทั่วไป
+            'บริ หาร': 'บริหาร',
+            'จัด การ': 'จัดการ',
+            'พัฒ นา': 'พัฒนา',
+            'ศึก ษา': 'ศึกษา',
+            'วิ จัย': 'วิจัย',
+            'คุ ณภาพ': 'คุณภาพ',
+            'มาต รฐาน': 'มาตรฐาน',
+            'ระ บบ': 'ระบบ',
+            'วิ ธี': 'วิธี',
+            'ก ระบวน': 'กระบวน',
+            'ขั้น ตอน': 'ขั้นตอน',
+            'แ นวทาง': 'แนวทาง',
+            'ปัจ จุบัน': 'ปัจจุบัน',
+            'อ นาคต': 'อนาคต',
+            
+            // วรรณยุกต์
+            'เ ป็น': 'เป็น',
+            'ไ ด้': 'ได้',
+            'ใ ห้': 'ให้',
+            'แ ล้ว': 'แล้ว',
+            'ไ ป': 'ไป',
+            'มา ': 'มา',
+            'อ ยู่': 'อยู่',
+            'จะ ': 'จะ',
+            'นี้ ': 'นี้',
+            'นั้น ': 'นั้น',
+            'เ มื่อ': 'เมื่อ',
+            'ขณะ ': 'ขณะ',
+            'ตอ น': 'ตอน',
+            'เ วลา': 'เวลา',
+            
+            // เพิ่มรูปแบบการแก้ไขอัตโนมัติ
+            'ห ็': 'ห็',
+            'ก ็': 'ก็',
+            'น ็': 'น็',
+            'ม ็': 'ม็',
+            'ใ ช้': 'ใช้',
+            'ใ ส่': 'ใส่',
+            'ให ้': 'ให้',
+            'ได ้': 'ได้',
+            'เป ็น': 'เป็น',
+            'อย ู่': 'อยู่'
+        };
+
+        function fixText() {
+            const inputText = document.getElementById('inputText').value;
+            if (!inputText.trim()) {
+                alert('กรุณาใส่ข้อความที่ต้องการแก้ไข');
+                return;
+            }
+
+            let fixedText = inputText;
+            let fixes = [];
+            let fixCount = 0;
+
+            // แก้ไขตามฐานข้อมูล
+            for (const [wrong, correct] of Object.entries(commonFixes)) {
+                const regex = new RegExp(escapeRegex(wrong), 'gi');
+                if (regex.test(fixedText)) {
+                    const matches = fixedText.match(regex);
+                    if (matches) {
+                        fixes.push({
+                            before: wrong,
+                            after: correct,
+                            count: matches.length
+                        });
+                        fixCount += matches.length;
+                    }
+                    fixedText = fixedText.replace(regex, correct);
+                }
+            }
+
+            // แก้ไขรูปแบบทั่วไป
+            // แก้สระ ำ ที่หายไปด้วย Regex patterns ที่แม่นยำกว่า
+            const specificAmReplacements = [
+                // รูปแบบเฉพาะสำหรับคำที่มักจะผิด
+                { pattern: /\bด า([ก-ฮ][ก-ฮ]*)\b/g, replacement: 'ดำ$1' },
+                { pattern: /\bก า([ก-ฮ][ก-ฮ]*)\b/g, replacement: 'กำ$1' },
+                { pattern: /\bจัดท า([ก-ฮ][ก-ฮ]*)\b/g, replacement: 'จัดทำ$1' },
+                { pattern: /\bท า([ก-ฮ][ก-ฮ]*)\b/g, replacement: 'ทำ$1' },
+                { pattern: /\bส า([ก-ฮ][ก-ฮ]*)\b/g, replacement: 'สำ$1' },
+                { pattern: /\bค า([ก-ฮ][ก-ฮ]*)\b/g, replacement: 'คำ$1' },
+                { pattern: /\bน้ า([ก-ฮ][ก-ฮ]*)\b/g, replacement: 'น้ำ$1' },
+                { pattern: /\bข า([ว])/g, replacement: 'ข้า$1' },
+            ];
+
+            specificAmReplacements.forEach(({ pattern, replacement }) => {
+                const matches = [...fixedText.matchAll(pattern)];
+                matches.forEach(match => {
+                    const originalWord = match[0];
+                    const newWord = originalWord.replace(pattern, replacement);
+                    
+                    // ตรวจสอบว่าเป็นคำที่ควรแก้หรือไม่
+                    if (shouldCorrectToAmSpecific(originalWord, newWord)) {
+                        fixes.push({
+                            before: originalWord,
+                            after: newWord,
+                            count: 1
+                        });
+                        fixCount++;
+                        fixedText = fixedText.replace(originalWord, newWord);
+                    }
+                });
+            });
+
+            // แก้รูปแบบทั่วไปอื่นๆ
+            const missingAmPatterns = [
+                /\b([ก-ฮ]) า([ก-ฮ][ก-ฮ]*[ก-ฮ][ก-ฮ]*)\b/g, // เช่น ดาเนิน, กาหนด
+                /\b([ก-ฮ][ก-ฮ]?)า([ก-ฮ][ก-ฮ]*)\b/g, // เช่น คาถาม, สาคัญ
+                /\b([ก-ฮ]) า([ก-ฮ][ก-ฮ][ก-ฮ]+)\b/g, // เช่น กาจัด, ทาการ
+            ];
+
+            missingAmPatterns.forEach(pattern => {
+                const matches = [...fixedText.matchAll(pattern)];
+                matches.forEach(match => {
+                    const fullMatch = match[0];
+                    const prefix = match[1];
+                    const suffix = match[2];
+                    const corrected = `${prefix}ำ${suffix}`;
+                    
+                    // ตรวจสอบว่าเป็นคำที่ควรแก้หรือไม่
+                    if (shouldCorrectToAm(fullMatch) && !fixedText.includes(corrected)) {
+                        fixes.push({
+                            before: fullMatch,
+                            after: corrected,
+                            count: 1
+                        });
+                        fixCount++;
+                        fixedText = fixedText.replace(fullMatch, corrected);
+                    }
+                });
+            });
+
+            // แก้สระที่แยกออก
+            fixedText = fixedText.replace(/([ก-ฮ])\s+([ั-ฺ็-๎])/g, (match, consonant, vowel) => {
+                fixes.push({
+                    before: `${consonant} ${vowel}`,
+                    after: `${consonant}${vowel}`,
+                    count: 1
+                });
+                fixCount++;
+                return consonant + vowel;
+            });
+
+            // แก้วรรณยุกต์ที่แยกออก  
+            fixedText = fixedText.replace(/([ก-ฮ])([ั-ฺ]?)\s+([่-๋])/g, (match, consonant, vowel, tone) => {
+                fixes.push({
+                    before: match,
+                    after: `${consonant}${vowel || ''}${tone}`,
+                    count: 1
+                });
+                fixCount++;
+                return consonant + (vowel || '') + tone;
+            });
+
+            // แก้ไขช่องว่างที่ไม่จำเป็น
+            fixedText = fixedText.replace(/\s+/g, ' ').trim();
+
+            // แสดงผลลัพธ์
+            document.getElementById('outputText').value = fixedText;
+            
+            // แสดงสถิติ
+            const statsDiv = document.getElementById('stats');
+            const statsContent = document.getElementById('statsContent');
+            statsContent.innerHTML = `
+                🎯 แก้ไขทั้งหมด: ${fixCount} จุด<br>
+                📊 ความยาวข้อความเดิม: ${inputText.length} ตัวอักษร<br>
+                📈 ความยาวข้อความใหม่: ${fixedText.length} ตัวอักษร
+            `;
+            statsDiv.style.display = 'block';
+
+            // แสดงรายการการแก้ไข
+            if (fixes.length > 0) {
+                const fixesDiv = document.getElementById('fixesList');
+                const fixesContent = document.getElementById('fixesContent');
+                let fixesHtml = '';
+                fixes.forEach(fix => {
+                    fixesHtml += `
+                        <div class="fix-item">
+                            <span class="before">"${fix.before}"</span> → <span class="after">"${fix.after}"</span>
+                            ${fix.count > 1 ? ` (${fix.count} ครั้ง)` : ''}
+                        </div>
+                    `;
+                });
+                fixesContent.innerHTML = fixesHtml;
+                fixesDiv.style.display = 'block';
+            }
+
+            // แสดงปุ่มคัดลอก
+            document.getElementById('copyButton').style.display = 'inline-block';
+        }
+
+        function shouldCorrectToAmSpecific(original, corrected) {
+            // คำที่แน่ใจว่าต้องแก้
+            const definiteAmWords = [
+                'ดำเนิน', 'กำหนด', 'กำลัง', 'จัดทำ', 'ทำ', 'สำคัญ', 'คำ', 'น้ำ', 'ข้าว'
+            ];
+            
+            return definiteAmWords.some(word => corrected.includes(word));
+        }
+
+        function shouldCorrectToAm(word) {
+            // รายการคำที่ควรมีสระ ำ แต่อาจจะเขียนเป็น า
+            const amWords = [
+                'ดำเนิน', 'จัดทำ', 'ทำ', 'กำหนด', 'กำลัง', 'กำไร', 'กำเนิด', 'กำจัด',
+                'คำ', 'สำคัญ', 'สำเร็จ', 'สำเหตุ', 'สำนวน', 'สำนัก', 'สำรวจ', 'สำรอง', 'สำคร', 'สำราญ', 'สำแดง',
+                'น้ำ', 'กับข้าว', 'ข้าวสาร', 'ข้าวโพด', 'ข้าวต้ม', 'ข้าวผัด',
+                'ทำงาน', 'ทำเล', 'ทำการ', 'ทำได้', 'ทำแล้ว'
+            ];
+            
+            // ตรวจสอบว่าคำที่แก้แล้วอยู่ในรายการหรือไม่
+            const correctedWord = word.replace(/า/g, 'ำ');
+            return amWords.some(validWord => 
+                correctedWord.includes(validWord) || validWord.includes(correctedWord)
+            );
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById('outputText');
+            outputText.select();
+            document.execCommand('copy');
+            
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 2000);
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            document.getElementById('stats').style.display = 'none';
+            document.getElementById('fixesList').style.display = 'none';
+            document.getElementById('copyButton').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // เพิ่ม event listener สำหรับ Enter
+        document.getElementById('inputText').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                fixText();
+            }
+        });
+
+        // Sidebar functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                // Mobile behavior
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+            } else {
+                // Desktop behavior
+                sidebar.classList.toggle('hidden');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        // Close sidebar when clicking on overlay
+        document.getElementById('sidebarOverlay').addEventListener('click', function() {
+            toggleSidebar();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 768) {
+                // Desktop: hide mobile elements
+                overlay.classList.remove('show');
+                sidebar.classList.remove('show');
+            } else {
+                // Mobile: reset desktop classes
+                sidebar.classList.remove('hidden');
+                mainContent.classList.remove('expanded');
+            }
+        });
+    </script>
+    </div>
+    </main>
+</body>
+</html>

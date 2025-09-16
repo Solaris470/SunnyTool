@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องมือลบข้อมูลซ้ำ</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="../assets/shared.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fafafa;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-section, .output-section {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        button {
+            background: #2196f3;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 8px 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        button:hover {
+            background: #1976d2;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .copy-btn {
+            background: #4caf50;
+        }
+        .copy-btn:hover {
+            background: #43a047;
+        }
+        .copy-btn[style*="background-color: #8e44ad"] {
+            background: #9c27b0 !important;
+        }
+        .copy-btn[style*="background-color: #8e44ad"]:hover {
+            background: #7b1fa2 !important;
+        }
+        .stats {
+            background: #e3f2fd;
+            color: #2196f3;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-weight: 500;
+            border: 1px solid #bbdefb;
+        }
+        .removed-items {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .removed-items h3 {
+            margin-top: 0;
+            color: #f57c00;
+        }
+        .removed-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .instruction {
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 5px 5px 0;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="material-icons">wb_sunny</span>
+            SunnyTool
+        </div>
+        <div class="header-nav">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <span class="material-icons">menu</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <ul class="sidebar-nav">
+            <li><a href="../index.html"><span class="material-icons">home</span> หน้าหลัก</a></li>
+            <li><a href="thai_text_fixer.html"><span class="material-icons">translate</span> แก้ไขข้อความไทย</a></li>
+            <li><a href="clean_googlesheet_data.html" class="active"><span class="material-icons">table_chart</span> ลบข้อมูลซ้ำ</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="container">
+        <h1>🔧 เครื่องมือลบข้อมูลซ้ำจาก Google Sheets</h1>
+        
+        <div class="instruction">
+            <strong>วิธีใช้:</strong> วางข้อมูลจาก Google Sheets ลงในช่องด้านล่าง แล้วคลิก "ลบข้อมูลซ้ำ" จากนั้นคัดลอกผลลัพธ์กลับไปใส่ใน Google Sheets
+        </div>
+
+        <div class="input-section">
+            <label for="input-text">📝 วางข้อมูลที่ต้องการลบซ้ำ:</label>
+            <textarea id="input-text" placeholder="วางข้อมูลของคุณที่นี่...&#10;แต่ละบรรทัดจะถูกตรวจสอบว่าซ้ำกันหรือไม่"></textarea>
+        </div>
+
+        <button onclick="removeDuplicates()">🗑️ ลบข้อมูลซ้ำ</button>
+        <button onclick="clearAll()">🧹 ล้างทั้งหมด</button>
+
+        <div id="stats" class="stats" style="display: none;"></div>
+        <div id="removed-section" class="removed-items" style="display: none;"></div>
+
+        <div class="output-section">
+            <label for="output-text">✅ ผลลัพธ์ (ข้อมูลที่ไม่ซ้ำ):</label>
+            <textarea id="output-text" placeholder="ผลลัพธ์จะแสดงที่นี่..." readonly></textarea>
+            <button class="copy-btn" onclick="copyResult()" style="display: none;" id="copy-btn">📋 คัดลอกผลลัพธ์</button>
+            <button class="copy-btn" onclick="copyAsArray()" style="display: none; background-color: #8e44ad;" id="copy-array-btn">🔢 คัดลอกเป็น Array</button>
+        </div>
+    </div>
+
+    <script>
+        function removeDuplicates() {
+            const input = document.getElementById('input-text').value;
+            const output = document.getElementById('output-text');
+            const stats = document.getElementById('stats');
+            const removedSection = document.getElementById('removed-section');
+            const copyBtn = document.getElementById('copy-btn');
+            const copyArrayBtn = document.getElementById('copy-array-btn');
+
+            if (!input.trim()) {
+                alert('กรุณาใส่ข้อมูลก่อนครับ');
+                return;
+            }
+
+            // แยกข้อมูลเป็นบรรทัด
+            const lines = input.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            const originalCount = lines.length;
+
+            // หาข้อมูลที่ซ้ำ
+            const seen = new Set();
+            const duplicates = [];
+            const unique = [];
+
+            lines.forEach(line => {
+                if (seen.has(line)) {
+                    duplicates.push(line);
+                } else {
+                    seen.add(line);
+                    unique.push(line);
+                }
+            });
+
+            // แสดงผลลัพธ์
+            output.value = unique.join('\n');
+            
+            // แสดงสถิติ
+            const removedCount = duplicates.length;
+            const finalCount = unique.length;
+            
+            stats.innerHTML = `
+                📊 <strong>สถิติ:</strong><br>
+                • ข้อมูลเดิม: ${originalCount} บรรทัด<br>
+                • ข้อมูลที่ซ้ำและถูกลบ: ${removedCount} บรรทัด<br>
+                • ข้อมูลที่เหลือ: ${finalCount} บรรทัด
+            `;
+            stats.style.display = 'block';
+
+            // แสดงรายการที่ถูกลบ
+            if (duplicates.length > 0) {
+                const uniqueDuplicates = [...new Set(duplicates)];
+                removedSection.innerHTML = `
+                    <h3>🗑️ ข้อมูลที่ถูกลบออก (${duplicates.length} บรรทัด):</h3>
+                    <div class="removed-list">${uniqueDuplicates.join('<br>')}</div>
+                `;
+                removedSection.style.display = 'block';
+            } else {
+                removedSection.style.display = 'none';
+            }
+
+            copyBtn.style.display = 'inline-block';
+            copyArrayBtn.style.display = 'inline-block';
+
+            // เลื่อนไปที่ผลลัพธ์
+            output.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function copyResult() {
+            const output = document.getElementById('output-text').value;
+            if (!output.trim()) {
+                alert('ไม่มีข้อมูลให้คัดลอกครับ');
+                return;
+            }
+
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = output;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            tempTextarea.setSelectionRange(0, 99999);
+
+            try {
+                document.execCommand('copy');
+                document.body.removeChild(tempTextarea);
+                
+                const btn = document.getElementById('copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = '✅ คัดลอกแล้ว!';
+                btn.style.backgroundColor = '#27ae60'; // Ensure it's green
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    // Revert to original background color if necessary, though it's already green
+                    btn.style.backgroundColor = '#27ae60'; 
+                }, 2000);
+            } catch (err) {
+                document.body.removeChild(tempTextarea);
+                alert('ไม่สามารถคัดลอกได้ กรุณาเลือกและคัดลอกเองครับ');
+            }
+        }
+
+        function copyAsArray() {
+            const output = document.getElementById('output-text').value;
+            if (!output.trim()) {
+                alert('ไม่มีข้อมูลให้คัดลอกครับ');
+                return;
+            }
+
+            const lines = output.split('\n').filter(line => line.trim());
+            const arrayString = "[" + 
+                lines.map(line => "'" + line.replace(/'/g, "\'") + "'").join(',') + 
+                "]";
+
+            // สร้าง textarea ชั่วคราวเพื่อคัดลอก
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = arrayString;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            tempTextarea.setSelectionRange(0, 99999);
+
+            try {
+                document.execCommand('copy');
+                document.body.removeChild(tempTextarea);
+                
+                const btn = document.getElementById('copy-array-btn');
+                const originalText = btn.textContent;
+                btn.textContent = '✅ คัดลอกแล้ว!';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+                
+                console.log('Array copied:', arrayString);
+            } catch (err) {
+                document.body.removeChild(tempTextarea);
+                alert('ไม่สามารถคัดลอกได้ กรุณาลองอีกครั้งครับ');
+            }
+        }
+
+        function clearAll() {
+            if (confirm('ต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) {
+                document.getElementById('input-text').value = '';
+                document.getElementById('output-text').value = '';
+                document.getElementById('stats').style.display = 'none';
+                document.getElementById('removed-section').style.display = 'none';
+                document.getElementById('copy-btn').style.display = 'none';
+                document.getElementById('copy-array-btn').style.display = 'none';
+            }
+        }
+
+        // ใส่ข้อมูลตัวอย่างเมื่อโหลดหน้า
+        /* 
+        window.onload = function() {
+            const sampleData = `
+                สรุปผลความคาดหวังผู้บริหารระดับสูง
+                M_MANAGER_QUESTION
+                การให้ความเห็นของผู้บริหารในแบบสอบถามความคาดหวังของผู้บริหารระดับสูง
+                M_OPINION_EXPECT
+                หัวข้อรวบรวมข้อมูลบริบทองค์กร
+                M_TOPIC_AGGREGATE_DATA
+                หน่วยงานรวบรวมบริบทองค์กร
+                FRM_TOPIC_DEP_AUDIT_PLAN
+                หน่วยรับตรวจ
+                FRM_UNIT_AUDIT
+                แบบประเมินความเสี่ยง เพื่อวางแผนการตรวจสอบ
+                M_WH_RISK_ASSESS_PLAN
+                แผนการตรวจสอบเชิงกลยุทธ์
+                M_WH_STRATEGIC_PLAN
+                หัวข้อรวบรวมข้อมูลบริบทองค์กร
+                M_TOPIC_AGGREGATE_DATA
+                หน่วยงานรวบรวมบริบทองค์กร
+                FRM_TOPIC_DEP_AUDIT_PLAN`;
+            
+            document.getElementById('input-text').value = sampleData;
+        }; 
+        */
+
+        // Sidebar functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                // Mobile behavior
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+            } else {
+                // Desktop behavior
+                sidebar.classList.toggle('hidden');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        // Close sidebar when clicking on overlay
+        document.getElementById('sidebarOverlay').addEventListener('click', function() {
+            toggleSidebar();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 768) {
+                // Desktop: hide mobile elements
+                overlay.classList.remove('show');
+                sidebar.classList.remove('show');
+            } else {
+                // Mobile: reset desktop classes
+                sidebar.classList.remove('hidden');
+                mainContent.classList.remove('expanded');
+            }
+        });
+    </script>
+    </div>
+    </main>
+</body>
+</html>
