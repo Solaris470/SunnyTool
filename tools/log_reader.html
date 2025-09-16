@@ -800,7 +800,7 @@
                     );
                     
                     // Highlight SQL commands
-                    const sqlCommands = ['insert', 'update', 'delete', 'select', 'create', 'drop', 'alter'];
+                    const sqlCommands = ['insert', 'delete', 'select', 'create', 'drop', 'alter'];
                     for (const cmd of sqlCommands) {
                         const pattern = new RegExp(`\\b(${cmd})\\b`, 'gi');
                         formatted = formatted.replace(pattern, '<span class="sql-command">$1</span>');
@@ -808,7 +808,11 @@
                     
                     // Highlight table names (words after FROM, INTO, UPDATE, JOIN)
                     formatted = formatted.replace(
-                        /\b(from|into|update|join)\s+([A-Za-z_][A-Za-z0-9_]*)/gi,
+                        /\b(update)\s+([A-Za-z_][A-Za-z0-9_]*)/gi,
+                        '<span class="sql-command">$1</span> <span class="sql-table">$2</span>'
+                    );
+                    formatted = formatted.replace(
+                        /\b(from|into|join)\s+([A-Za-z_][A-Za-z0-9_]*)/gi,
                         '$1 <span class="sql-table">$2</span>'
                     );
                     
