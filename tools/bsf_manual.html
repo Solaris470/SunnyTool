@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSF Functions Manual</title>
+    <style>
+        body {
+            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+        }
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 300px;
+            background: #fff;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+        }
+        .content {
+            flex: 1;
+            padding: 40px;
+            background: #fff;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-top: 1.5em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h1 { margin-top: 0; border-bottom: 3px solid #007bff; display: inline-block; }
+        h3 { border-bottom: none; color: #495057; font-size: 1.2rem; margin-top: 2em; }
+        
+        .nav-link {
+            display: block;
+            padding: 8px 10px;
+            color: #555;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-bottom: 2px;
+        }
+        .nav-link:hover {
+            background-color: #e9ecef;
+            color: #007bff;
+        }
+        .nav-group {
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .function-block {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 5px solid #007bff;
+        }
+        .function-name {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1.1rem;
+            color: #d63384;
+            font-weight: bold;
+        }
+        .function-signature {
+            font-family: 'Consolas', 'Monaco', monospace;
+            background: #2d3436;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+        .param-table th, .param-table td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .param-table th {
+            background-color: #e9ecef;
+            width: 20%;
+        }
+        .desc {
+            margin-top: 10px;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>BSF Manual</h2>
+        
+        <div class="nav-group">General Utility</div>
+        <a href="#bsf_language" class="nav-link">bsf_language</a>
+        <a href="#bsf_show_size" class="nav-link">bsf_show_size</a>
+        <a href="#bsf_check_orderby" class="nav-link">bsf_check_orderby</a>
+        <a href="#bsf_alert" class="nav-link">bsf_alert</a>
+        <a href="#bsf_send_line" class="nav-link">bsf_send_line</a>
+        
+        <div class="nav-group">Data & Field Replacement</div>
+        <a href="#bsf_show_text" class="nav-link">bsf_show_text</a>
+        <a href="#bsf_show_input" class="nav-link">bsf_show_input</a>
+        <a href="#bsf_show_field" class="nav-link">bsf_show_field</a>
+        
+        <div class="nav-group">Form Rendering</div>
+        <a href="#bsf_show_form" class="nav-link">bsf_show_form</a>
+        <a href="#bsf_show_form_area" class="nav-link">bsf_show_form_area</a>
+        
+        <div class="nav-group">Form Controls</div>
+        <a href="#bsf_form_itext" class="nav-link">bsf_form_itext</a>
+        <a href="#bsf_form_idate" class="nav-link">bsf_form_idate</a>
+        <a href="#bsf_form_iselect" class="nav-link">bsf_form_iselect</a>
+        <a href="#bsf_form_ifile" class="nav-link">bsf_form_ifile</a>
+    </div>
+
+    <div class="content">
+        <h1>BSF Functions Documentation</h1>
+        <p class="lead">คู่มือการใช้งานฟังก์ชันตระกูล <code>bsf_</code> จากไฟล์ <code>bk_function_workflow.php</code> สำหรับจัดการ Workflow System.</p>
+
+        <h2 id="general">1. General Utility Functions</h2>
+
+        <div id="bsf_language" class="function-block">
+            <div class="function-name">bsf_language</div>
+            <div class="function-signature">
+function bsf_language($l_code, $l_ref, $default_text, $l_null='')
+            </div>
+            <div class="desc">
+                จัดการแสดงผลภาษา (Localization) โดยตรวจสอบจากรหัสภาษาที่กำหนด
+            </div>
+            <table class="param-table">
+                <tr><th>Parameter</th><th>Description</th></tr>
+                <tr><td>$l_code</td><td>รหัสภาษาที่ต้องการตรวจสอบ</td></tr>
+                <tr><td>$l_ref</td><td>รหัสอ้างอิง</td></tr>
+                <tr><td>$default_text</td><td>ข้อความเริ่มต้นถ้าไม่พบภาษา</td></tr>
+                <tr><td>$l_null</td><td>ค่าที่จะส่งกลับถ้าเป็น null (optional)</td></tr>
+            </table>
+        </div>
+
+        <div id="bsf_show_size" class="function-block">
+            <div class="function-name">bsf_show_size</div>
+            <div class="function-signature">
+function bsf_show_size($data)
+            </div>
+            <div class="desc">
+                แปลงขนาดไฟล์ (bytes) เป็นข้อความที่อ่านง่าย (KB, MB, GB, TB)
+            </div>
+            <table class="param-table">
+                <tr><th>Parameter</th><th>Description</th></tr>
+                <tr><td>$data</td><td>ขนาดไฟล์ในหน่วย Bytes</td></tr>
+            </table>
+        </div>
+
+        <div id="bsf_check_orderby" class="function-block">
+            <div class="function-name">bsf_check_orderby</div>
+            <div class="function-signature">
+function bsf_check_orderby($sql)
+            </div>
+            <div class="desc">
+                ตรวจสอบ SQL Statement ว่ามีการใช้ ORDER BY อยู่ในตำแหน่งที่ถูกต้องหรือไม่
+            </div>
+            <table class="param-table">
+                <tr><th>Parameter</th><th>Description</th></tr>
+                <tr><td>$sql</td><td>คำสั่ง SQL ที่ต้องการตรวจสอบ</td></tr>
+                <tr><td>Returns</td><td>'Y' หรือ 'N'</td></tr>
+            </table>
+        </div>
+
+        <div id="bsf_alert" class="function-block">
+            <div class="function-name">bsf_alert</div>
+            <div class="function-signature">
+function bsf_alert($W, $WFR, $WFD, $line, $WF_TYPE, $CURRENT)
+            </div>
+            <div class="desc">
+                สร้างรายการแจ้งเตือน (Alert) ลงในระบบ (ตาราง WF_ALERT) โดยตรวจสอบสิทธิ์ผู้รับตาม Step Workflow
+            </div>
+            <table class="param-table">
+                <tr><th>Parameter</th><th>Description</th></tr>
+                <tr><td>$W</td><td>Workflow Main ID</td></tr>
+                <tr><td>$WFR</td><td>Workflow Reference ID (PK Record)</td></tr>
+                <tr><td>$WFD</td><td>Workflow Detail ID (Step ID)</td></tr>
+                <tr><td>$line</td><td>'Y' หรือ 'N' (Flag เปิดใช้งาน Line Notify)</td></tr>
+                <tr><td>$WF_TYPE</td><td>ประเภท Workflow</td></tr>
+                <tr><td>$CURRENT</td><td>Step ปัจจุบันที่ส่งมา</td></tr>
+            </table>
+        </div>
+        
+        <div id="bsf_send_line" class="function-block">
+            <div class="function-name">bsf_send_line</div>
+            <div class="function-signature">
+function bsf_send_line(int $usrId, array $detail = [])
+            </div>
+            <div class="desc">
+                ส่งการแจ้งเตือนผ่าน LINE OA ไปยังผู้ใช้งาน โดยใช้ Flex Message
+            </div>
+            <table class="param-table">
+                <tr><th>Parameter</th><th>Description</th></tr>
+                <tr><td>$usrId</td><td>ID ของ User (USR_ID) ที่จะส่งข้อความหา</td></tr>
+                <tr><td>$detail</td><td>Array ของข้อมูลที่จะส่ง<br>
+                    - <span class="tag">txt_preview</span>: ข้อความพรีวิว<br>
+                    - <span class="tag">txt_message</span>: ข้อความหลัก<br>
+                    - <span class="tag">txt_title</span>: หัวข้อ (optional)<br>
+                    - <span class="tag">txt_from</span>, <span class="tag">txt_type</span>: ข้อมูลผู้ส่ง/ประเภท<br>
+                    - <span class="tag">url_btn</span>, <span class="tag">txt_btn</span>: ปุ่มกดและลิงก์
+                </td></tr>
+            </table>
+        </div>
+
+        <h2 id="data">2. Data & Field Replacement</h2>
+        <p>ฟังก์ชันกลุ่มนี้ใช้สำหรับแทนที่ Tag <code>##FIELD_NAME!!</code> ในข้อความหรือ HTML ด้วยข้อมูลจริงจากฐานข้อมูล</p>
+
+        <div id="bsf_show_text" class="function-block">
+            <div class="function-name">bsf_show_text</div>
+            <div class="function-signature">
+function bsf_show_text($W, $A_DATA, $text, $WF_TYPE='')
+            </div>
+            <div class="desc">
+                แทนที่ <code>##FIELD!!</code> ในข้อความด้วยค่าจาก Array ข้อมูล ($A_DATA)
+            </div>
+            <table class="param-table">
+                <tr><th>Parameter</th><th>Description</th></tr>
+                <tr><td>$W</td><td>Workflow Main ID</td></tr>
+                <tr><td>$A_DATA</td><td>Array ข้อมูลที่ query มาได้ (เช่น $rec_main)</td></tr>
+                <tr><td>$text</td><td>ข้อความต้นฉบับที่มี tag ##...!!</td></tr>
+                <tr><td>$WF_TYPE</td><td>ประเภท Workflow</td></tr>
+            </table>
+        </div>
+
+        <div id="bsf_show_input" class="function-block">
+            <div class="function-name">bsf_show_input</div>
+            <div class="function-signature">
+function bsf_show_input($W, $A_DATA, $text, $WF_TYPE='W', $array_out=array(), $Flag='')
+            </div>
+            <div class="desc">
+                คล้าย <code>bsf_show_text</code> แต่ใช้สำหรับเตรียมข้อมูลเพื่อแสดงใน Input Form
+            </div>
+        </div>
+        
+        <h2 id="form">3. Form Rendering System</h2>
+        <p>ฟังก์ชันหลักสำหรับสร้างหน้าจอแบบฟอร์ม Workflow</p>
+
+        <div id="bsf_show_form" class="function-block">
+            <div class="function-name">bsf_show_form</div>
+            <div class="function-signature">
+function bsf_show_form($W, $WFD=0, $WF=array(), $WF_TYPE='W', $WFS='', $SHOW='', $VIEW='', $WFS_CONF='', $INLINE_USE='')
+            </div>
+            <div class="desc">
+                ฟังก์ชันหลัก (Main Function) ในการ Render แบบฟอร์ม Workflow ทั้งหมด โดยจะไปเรียกฟังก์ชันย่อยๆ เพื่อสร้าง Tab และ Input field ต่างๆ
+            </div>
+            <table class="param-table">
+                <tr><th>Parameter</th><th>Description</th></tr>
+                <tr><td>$W</td><td>Workflow Main ID (WF_MAIN_ID)</td></tr>
+                <tr><td>$WFD</td><td>Workflow Detail ID (WFD_ID) ขั้นตอนปัจจุบัน</td></tr>
+                <tr><td>$WF</td><td>Array config ของ Workflow</td></tr>
+                <tr><td>$WF_TYPE</td><td>ประเภท (Default: 'W')</td></tr>
+                <tr><td>$WFS</td><td>ระบุ ID ขั้นตอนย่อย (WF_STEP_FORM) เฉพาะเจาะจง (ถ้ามี)</td></tr>
+                <tr><td>$SHOW</td><td>Flag ต่อท้าย Input ID</td></tr>
+                <tr><td>$VIEW</td><td>'Y' ถ้าต้องการโหมดดูอย่างเดียว (Read-only)</td></tr>
+            </table>
+        </div>
+
+        <div id="bsf_show_form_area" class="function-block">
+            <div class="function-name">bsf_show_form_area</div>
+            <div class="function-signature">
+function bsf_show_form_area($sql_form, $rec_main, $WFD, $WF, $WF_TYPE, $WFS, $SHOW, $VIEW, $WFS_CONF, $innline_form_use)
+            </div>
+            <div class="desc">
+                ฟังก์ชันภายในสำหรับวนลูปสร้าง Field ต่างๆ ใน Form (มักถูกเรียกจาก bsf_show_form)
+            </div>
+        </div>
+
+        <h2 id="controls">4. Form Control Components</h2>
+        <p>ฟังก์ชันสร้าง HTML Input Types ต่างๆ (Text, Date, Select, etc.)</p>
+
+        <div id="bsf_form_itext" class="function-block">
+            <div class="function-name">bsf_form_itext</div>
+            <div class="function-signature">
+function bsf_form_itext($BSF_DET, $WF, $rec_main)
+            </div>
+            <div class="desc">สร้าง Input Type Text</div>
+        </div>
+        <div id="bsf_form_idate" class="function-block">
+            <div class="function-name">bsf_form_idate</div>
+            <div class="function-signature">
+function bsf_form_idate($BSF_DET, $WF, $rec_main)
+            </div>
+            <div class="desc">สร้าง Input Date Picker (ปฏิทิน)</div>
+        </div>
+        <div id="bsf_form_iselect" class="function-block">
+            <div class="function-name">bsf_form_iselect</div>
+            <div class="function-signature">
+function bsf_form_iselect($BSF_DET, $WF, $rec_main)
+            </div>
+            <div class="desc">สร้าง Dropdown Select Box</div>
+        </div>
+         <div id="bsf_form_iradio" class="function-block">
+            <div class="function-name">bsf_form_iradio</div>
+            <div class="function-signature">
+function bsf_form_iradio($BSF_DET, $WF, $rec_main)
+            </div>
+            <div class="desc">สร้าง Radio Button Group</div>
+        </div>
+         <div id="bsf_form_icheck" class="function-block">
+            <div class="function-name">bsf_form_icheck</div>
+            <div class="function-signature">
+function bsf_form_icheck($BSF_DET, $WF, $rec_main, $WF_TYPE)
+            </div>
+            <div class="desc">สร้าง Checkbox Group</div>
+        </div>
+         <div id="bsf_form_ifile" class="function-block">
+            <div class="function-name">bsf_form_ifile</div>
+            <div class="function-signature">
+function bsf_form_ifile($BSF_DET, $WF, $rec_main)
+            </div>
+            <div class="desc">สร้าง File Upload Input</div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

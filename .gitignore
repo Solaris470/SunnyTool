@@ -1,2 +1,4 @@
 # Ignore sensitive configuration files
 /assets/config.js
+.env
+node_modules/

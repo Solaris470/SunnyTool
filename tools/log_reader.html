@@ -587,6 +587,15 @@
 
             <!-- Input Section -->
             <div class="input-section">
+                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <input type="file" id="fileInput" accept=".log,.txt" style="display: none;">
+                    <button onclick="document.getElementById('fileInput').click()" style="background: #607d8b;">
+                        <span class="material-icons" style="vertical-align: middle; font-size: 18px; margin-right: 5px;">upload_file</span>
+                        อัปโหลดไฟล์ Log
+                    </button>
+                    <span id="fileName" style="color: #666; font-size: 13px;"></span>
+                </div>
+
                 <label for="logInput" style="display: block; margin-bottom: 8px; font-weight: bold; color: #34495e;">
                     📝 วาง log ข้อมูลที่นี่:
                 </label>
@@ -603,13 +612,13 @@
                                 <span class="material-icons search-icon">search</span>
                             </div>
                             <div class="action-buttons">
-                                <button onclick="formatLogs()" class="format-btn" title="แสดง log ทั้งหมด">
+                                <button onclick="clearFilters()" class="format-btn" title="ล้างการค้นหาและแสดง log ทั้งหมด">
                                     <span class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">refresh</span>
                                     แสดงทั้งหมด
                                 </button>
-                                <button onclick="clearAll()" class="clear-btn" title="ล้าง Filter ที่เลือกไว้">
-                                    <span class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">filter_alt_off</span>
-                                    Clear Filter
+                                <button onclick="clearAll()" class="clear-btn" title="ล้างข้อมูลทั้งหมด">
+                                    <span class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">delete_sweep</span>
+                                    Reset
                                 </button>
                             </div>
                         </div>
@@ -685,12 +694,29 @@
 
             // Auto-process logs when input changes
             document.getElementById('logInput').addEventListener('input', function() {
-                const input = this.value.trim();
-                if (input) {
+                const input = this.value;
+                if (input.trim()) {
                     processLogs(input);
                 } else {
                     clearLogs();
                 }
+            });
+
+            // Handle File Upload
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                document.getElementById('fileName').textContent = `📄 ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    // แสดงข้อความแทนเนื้อหาจริงเพื่อประหยัด Memory ของ Textarea
+                    document.getElementById('logInput').value = `[File Loaded] ${file.name}\nSize: ${(file.size/1024).toFixed(2)} KB\nLines: Estimating...`;
+                    processLogs(content);
+                };
+                reader.readAsText(file);
             });
 
             // Search functionality
@@ -707,7 +733,9 @@
             });
 
             function processLogs(input) {
-                const lines = input.split('\n').filter(line => line.trim());
+                // Fix: Split by regex to handle \r\n (Windows) and \n (Linux/Mac) correctly
+                // This fixes the issue where uploaded files weren't parsed correctly due to trailing \r
+                const lines = input.split(/\r?\n/).filter(line => line.trim());
                 logData = [];
                 
                 lines.forEach((line, index) => {
@@ -834,8 +862,12 @@
                     return;
                 }
 
+                // LIMIT DISPLAY to prevent browser crash with 500k lines
+                const MAX_DISPLAY = 2000;
+                const displayData = filteredData.slice(0, MAX_DISPLAY);
+                
                 let html = '';
-                filteredData.forEach(logEntry => {
+                displayData.forEach(logEntry => {
                     const isHighlighted = searchTerm && logEntry.original.toLowerCase().includes(searchTerm);
                     html += `
                         <div class="log-line ${isHighlighted ? 'highlighted' : ''}" data-level="${logEntry.level}">
@@ -845,8 +877,17 @@
                     `;
                 });
 
+                if (filteredData.length > MAX_DISPLAY) {
+                    html += `
+                        <div class="log-line" style="background: #fff3cd; color: #856404; text-align: center; padding: 10px;">
+                            ⚠️ แสดงผลเพียง ${MAX_DISPLAY.toLocaleString()} บรรทัดแรก (จากทั้งหมด ${filteredData.length.toLocaleString()}) เพื่อป้องกัน Browser ค้าง <br>
+                            กรุณาใช้ <b>Search</b> หรือ <b>Filter</b> ด้านบนเพื่อเจาะจงข้อมูลที่ต้องการ
+                        </div>
+                    `;
+                }
+
                 logContent.innerHTML = html;
-                document.getElementById('logInfo').textContent = `${filteredData.length} lines`;
+                document.getElementById('logInfo').textContent = `${filteredData.length.toLocaleString()} lines (Matches)`;
             }
 
             function updateStats() {
@@ -921,12 +962,14 @@
             }
 
             function clearAll() {
-                // if (confirm('ต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) {
-                //     document.getElementById('logInput').value = '';
-                //     document.getElementById('searchInput').value = '';
-                //     clearLogs();
-                    clearFilters();
-                // }
+                 if (confirm('ต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) {
+                     document.getElementById('logInput').value = '';
+                     document.getElementById('searchInput').value = '';
+                     document.getElementById('fileName').textContent = ''; // Clear filename
+                     document.getElementById('fileInput').value = ''; // Reset file input
+                     clearLogs();
+                     clearFilters();
+                 }
             }
 
             function clearLogs() {
@@ -939,11 +982,12 @@
 
             function clearFilters() {
                 document.getElementById('searchInput').value = '';
-                formatLogs();
+                // formatLogs(); // Remove this dangerous call
                 activeFilters.clear();
                 document.querySelectorAll('.filter-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
+                applyFilters(); // Use applyFilters instead to refresh view from memory
             }
 
             function escapeRegex(string) {

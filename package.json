@@ -1,0 +1,20 @@
+{
+  "name": "sunnytool",
+  "version": "1.0.0",
+  "description": "เว็บไซต์รวบรวมเครื่องมือออนไลน์ที่มีประโยชน์สำหรับการทำงานแบบ All-in-One",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Solaris470/SunnyTool.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Solaris470/SunnyTool/issues"
+  },
+  "homepage": "https://github.com/Solaris470/SunnyTool#readme"
+}
